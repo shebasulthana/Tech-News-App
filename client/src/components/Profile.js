@@ -7,6 +7,7 @@ function Profile() {
     const [savedArticles, setSavedArticles] = useState([]);
     let [userData, setUserData] = useState(null)
     
+    
    
     useEffect(() => {
         const callProfilePage = async () => {

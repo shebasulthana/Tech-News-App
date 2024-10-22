@@ -40,6 +40,13 @@ const userSchema = new mongoose.Schema({
             publishedAt: Date
         }
     ],
+    preferences: [String],  // Array to store user-selected categories (e.g., AI, blockchain)
+    browsingHistory: [
+        {
+            articleId: String,
+            timestamp: Date
+        }
+    ],
     tokens: [
         {
             token: {

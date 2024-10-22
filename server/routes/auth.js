@@ -165,6 +165,78 @@ router.get('/saved-articles', authenticate, async (req, res) => {
     }
   });
   
+  router.post('/update-preferences', authenticate, async (req, res) => {
+    try {
+        const user = req.rootUser;
+        const { preferences } = req.body;
 
+        user.preferences = preferences;
+        await user.save();
 
+        res.status(200).json({ message: "Preferences updated successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to update preferences" });
+    }
+});
+
+router.post('/track-article', authenticate, async (req, res) => {
+    try {
+        const user = req.rootUser;
+        const { articleId } = req.body;
+
+        user.browsingHistory.push({ articleId, timestamp: new Date() });
+        await user.save();
+
+        res.status(200).json({ message: "Article tracked successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to track article" });
+    }
+});
+router.get('/get-personalized-news', authenticate, async (req, res) => {
+    try {
+        const user = req.rootUser;
+        const userPreferences = user.preferences;
+
+        const personalizedNews = await getPersonalizedNews(userPreferences);  // Call the function to get personalized news
+
+        res.status(200).json({ articles: personalizedNews });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch personalized content" });
+    }
+});
+
+// Function to fetch personalized news
+const getPersonalizedNews = async (userPreferences) => {
+    const query = userPreferences.join(" OR ");  // Combine user preferences into a query string
+    const url = `https://newsapi.org/v2/everything?q=${query}&apiKey=your_api_key`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.articles;  // Return personalized articles
+    } catch (error) {
+        console.error('Error fetching personalized news:', error);
+    }
+};
+
+const recommendArticles = (userPreferences, articles) => {
+    return articles.filter(article => {
+        // Prioritize articles that match user preferences
+        return userPreferences.some(preference => article.title.includes(preference) || article.description.includes(preference));
+    });
+};
+
+router.get('/get-personalized-news', authenticate, async (req, res) => {
+    try {
+        const user = req.rootUser;
+        const userPreferences = user.preferences;
+
+        const allNews = await getPersonalizedNews(userPreferences);  // Fetch all articles based on preferences
+        const recommendedNews = recommendArticles(userPreferences, allNews);  // Filter based on preferences
+
+        res.status(200).json({ articles: recommendedNews });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch personalized content" });
+    }
+});
 
