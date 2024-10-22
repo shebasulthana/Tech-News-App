@@ -3,7 +3,7 @@ import NewsCard from './NewsCard';
 
 function News(props) {
   const [articles, setArticles] = useState([]);
-  const [savedArticles, setSavedArticles] = useState([]); // New state for saved articles
+  const [savedArticles, setSavedArticles] = useState([]);
   let [search, setsearch] = useState("");
   let [query, setquery] = useState(null);
   const [loading, setloading] = useState(true);
@@ -22,7 +22,7 @@ function News(props) {
   // Fetch the news articles
   useEffect(() => {
     const getNews = async () => {
-      let url = `https://newsapi.org/v2/everything?q=${query ? query + " " + props.category : props.category || "technology"}&apiKey=330e87d7b7a04229acbf2a4de862c4e0`;
+      let url = `https://newsapi.org/v2/everything?q=${query ? query + " " + props.category : props.category || "technology"}&apiKey=aec97ec7f08b4b0fb616ba6b4affcda9`;
       try {
         setloading(true);
         const response = await fetch(url);
